@@ -12,8 +12,8 @@ Là ứng dụng unity 3d sử dụng thư viện Solar-Calculator của NOAA (h
 => sau khi nghiên cứu em thấy dùng thư viện sẽ chính sát hơn và việc code sẽ thuận tiện hơn.
 
 **Phát triển sản phẩm**
-  1. Tạo môi trường theo như yêu cầu của Level:
+  1. Tạo môi trường theo như yêu cầu của Level: với sàn là một tấm plane có la bàn để thuận tiện trong việc nhận biết hướng, trụ là Cylinder cao 2m, và mặt trời là directional light.
   2. Cài đặt các thư viện SolarCalculator thông qua package (https://github.com/GlitchEnzo/NuGetForUnity) vì nếu cài trực tiếp thư viện vào thì dẫn để máy tự động cài nhiều phiên bản của thư viện (hổ trợ nhiều loại .net khác nhau) -> unity sẽ không hiểu phải sử dụng phiên bản nào và sẽ không dùng được. 
   3. Test thư viện với debug.log
-  4. Thiết kế UI.
-  5. Hoàn thành sản phẩm.
+  4. Thiết kế UI, viết code và test.
+  5. Chỉnh sửa các input và hoàn thành sản phẩm.
