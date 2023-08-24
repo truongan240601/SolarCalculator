@@ -8,16 +8,21 @@ using Innovative.SolarCalculator;
 
 public class InputsScript : MonoBehaviour
 {
-    [SerializeField] Transform sun;
+    [Header("Inputs")]
     [SerializeField] TMP_InputField latitudeInput;
     [SerializeField] TMP_InputField longitudeInput;
     [SerializeField] TMP_InputField dayInput;
     [SerializeField] TMP_InputField monthInput;
     [SerializeField] TMP_InputField timeInput;
-    [SerializeField] Slider timeSlide;
+    [SerializeField] Slider cameraSlide;
 
-    public float latitude = 0;
-    public float longitude = 0;
+    [Header("Outputs")]
+    [SerializeField] Transform sun;
+    [SerializeField] Transform cam;
+    [SerializeField] TextMeshProUGUI statsTMP;
+
+    float latitude = 0;
+    float longitude = 0;
     public DateTime dateTime;
 
 
@@ -35,9 +40,10 @@ public class InputsScript : MonoBehaviour
         dayInput.onEndEdit.AddListener(DayOnValueChanged);
         monthInput.onEndEdit.AddListener(MonthOnValueChanged);
         timeInput.onEndEdit.AddListener(TimeOnEndEdit);
+        cameraSlide.onValueChanged.AddListener(CameraOnValueChanged);
 
 
-        dateTime = new DateTime(1900, 1, 1, 9, 0, 0, DateTimeKind.Unspecified);
+        dateTime = new DateTime(2001, 1, 1, 9, 0, 0, DateTimeKind.Unspecified);
         //dateTime.AddDays(1);
         //dateTime.AddMonths(1);
         //dateTime.AddHours(0);
@@ -64,7 +70,8 @@ public class InputsScript : MonoBehaviour
     void DayOnValueChanged(string value)
     {
         int day = int.Parse(value);
-        day = Mathf.Clamp(day, 1, 12);
+
+        day = Mathf.Clamp(day, 1, DateTime.DaysInMonth(2001, dateTime.Month));
         dayInput.text = day.ToString();
         dateTime = new DateTime(dateTime.Year, dateTime.Month, day, dateTime.Hour, dateTime.Minute, dateTime.Second, DateTimeKind.Unspecified);
         SolarCal();
@@ -72,11 +79,23 @@ public class InputsScript : MonoBehaviour
     void MonthOnValueChanged(string value)
     {
         int month = int.Parse(value);
+        int day = dateTime.Day;
+        //format month
         month = Mathf.Clamp(month, 1, 12);
         monthInput.text = month.ToString();
-        dateTime = new DateTime(dateTime.Year, month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second, DateTimeKind.Unspecified);
+        //format day of month
+        day = Mathf.Clamp(day, 1, DateTime.DaysInMonth(2001, month));
+        dayInput.text = day.ToString();
+        //set datetime
+        dateTime = new DateTime(dateTime.Year, month, day, dateTime.Hour, dateTime.Minute, dateTime.Second, DateTimeKind.Unspecified);
         SolarCal();
     }
+
+    void CameraOnValueChanged(float value)
+    {
+        cam.rotation = Quaternion.Euler(0, value, 0);
+    }
+
     void TimeOnEndEdit(string value)
     {
         string[] parts = value.Split(':');
@@ -112,9 +131,12 @@ public class InputsScript : MonoBehaviour
 
     public void SolarCal()
     {
-        TimeZoneInfo est = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+        //TimeZoneInfo est = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
 
         SolarTimes solarTimes = new SolarTimes(dateTime, DetermineTimeZone(longitude), latitude, longitude);
+
+        string stats = string.Format("Mặt trời mọc: {0} <br>Mặt trời lặng: {1} <br>Az/El(in °): {2}°/{3}° ", solarTimes.Sunrise.ToString("HH:mm:ss"), solarTimes.Sunset.ToString("HH:mm:ss"), solarTimes.SolarAzimuth.Degrees, solarTimes.SolarElevation.Degrees);
+        statsTMP.text = stats;
 
         Debug.Log("datetime: " + dateTime);
         Debug.Log("time zone: " + solarTimes.TimeZoneOffset);
@@ -123,6 +145,10 @@ public class InputsScript : MonoBehaviour
 
     }
 
+    public void ExitClick()
+    {
+        Application.Quit();
+    }
 
 
 }
